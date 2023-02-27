@@ -1,24 +1,19 @@
-import { productList } from '../mock-data';
+import { RESPONSE_HEADERS } from '../../models/response.model';
+import { productList } from '../../models/mock-data';
 
-const getProductsById = async (event) => {
-  const id = event.pathParameters.productId;
+export const getProductsById = async (event) => {
+  const id = event.pathParameters?.productId;
   const product = productList.find(product => product.id === id);
 
   if (!product) {
     return {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
-      },
+      headers: RESPONSE_HEADERS,
       statusCode: 404,
-      body: 'Product not found'
+      body: JSON.stringify('Product not found')
     }
   }
   return {
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Credentials": true,
-    },
+    headers: RESPONSE_HEADERS,
     statusCode: 200,
     body: JSON.stringify(product)
   }

@@ -1,12 +1,9 @@
-import { productList } from '../mock-data';
+import { RESPONSE_HEADERS } from '../../models/response.model';
+import { productList } from '../../models/mock-data';
 
-
-const getProductsList = async () => {
+export const getProductsList = async () => {
     return {
-        headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Credentials": true,
-        },
+        headers: RESPONSE_HEADERS,
         statusCode: 200,
         body: JSON.stringify(productList)
     }
