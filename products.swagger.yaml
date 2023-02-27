@@ -1,0 +1,100 @@
+openapi: 3.0.1
+
+info:
+  title: Shop API
+  description: Description
+  version: 1.0.0
+
+servers:
+ - url: https://bcgr9hz2rk.execute-api.eu-west-1.amazonaws.com/dev
+
+tags:
+- name: products
+  description: Operations with products
+paths:
+  /products/{productId}:
+    get:
+      tags:
+      - products
+      summary: Get product by id
+      description: Get product by id
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfProducts'
+        404:
+          description: A product with the specified ID was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /products:
+    get:
+      tags:
+      - products
+      summary: Get list of products
+      description: Get list of products
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        404:
+          description: "Products list not found"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Product Title"
+        description:
+          type: string
+          example: "Product Description"
+        id:
+          type: string
+          example: "7567ec4b-b10c-48c5-9345-fc73c48a80aa"
+        imageLink:
+          type: string
+        count:
+          type: integer
+          format: int64
+          example: 10
+        price:
+          type: integer
+          format: int64
+          example: 10.5
+    ArrayOfProducts:
+      type: array
+      items:
+          $ref: '#/components/schemas/Product'
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          example: 404
+        message:
+          type: string
+          example: "Product not found"
+      required:
+        - code
+        - message   
