@@ -4,26 +4,24 @@ import { RESPONSE_HEADERS } from '../../models/response.model';
 const dynamodb = new DynamoDB.DocumentClient();
 
 export const getProductsById = async (event) => {
-  try {
-    const id = event.pathParameters.productId.toString();
+  console.log('Incoming request:', event);
 
-    const resultProduct = await dynamodb.get({ TableName: 'products', Key: { id: id } }).promise();
-    const product = resultProduct.Item;
-    if (!product) {
-      throw new Error(`Product with id ${id} not found`);
-    }
+  try {
+    const id = event.pathParameters.productId;
+
+    const resultProduct = await dynamodb.get({ TableName: 'products', Key: { id } }).promise();
+    const productItem = resultProduct.Item;
 
     const resultStocks = await dynamodb.get({ TableName: 'stocks', Key: { product_id: id } }).promise();
     const stockItem = resultStocks.Item;
 
-    const productWithStock = await Promise.all([product, stockItem]);
-    if (!productWithStock) {
-      return {
-        headers: RESPONSE_HEADERS,
-        statusCode: 404,
-        body: JSON.stringify('Product not found')
-      }
+    if (!productItem && !stockItem) {
+      throw new Error(`Product with id ${id} not found`);
     }
+
+    const product = await productItem;
+    const stock = await stockItem;
+    const productWithStock = { ...product, count: stock.count };
 
     return {
       headers: RESPONSE_HEADERS,
@@ -36,7 +34,7 @@ export const getProductsById = async (event) => {
 
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: 'Internal server error' }),
+      body: JSON.stringify({ error: 'Unable to retrieve product' })
     };
   }
 }

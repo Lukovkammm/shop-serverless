@@ -1,6 +1,7 @@
 import type { AWS } from '@serverless/typescript';
 import getProductsById from '@functions/getProductsById';
 import getProductsList from '@functions/getProductsList';
+import createProduct from '@functions/createProduct';
 
 const serverlessConfiguration: AWS = {
   service: 'product-service',
@@ -48,10 +49,6 @@ const serverlessConfiguration: AWS = {
           TableName: '${self:provider.environment.PRODUCTS_TABLE}',
           AttributeDefinitions: [
             { AttributeName: 'id', AttributeType: 'S' },
-            { AttributeName: 'title', AttributeType: 'S' },
-            { AttributeName: 'description', AttributeType: 'S' },
-            { AttributeName: 'imageUrl', AttributeType: 'S' },
-            { AttributeName: 'price', AttributeType: 'N' },
           ],
           KeySchema: [
             { AttributeName: 'id', KeyType: 'HASH' }
@@ -67,8 +64,7 @@ const serverlessConfiguration: AWS = {
         Properties: {
           TableName: '${self:provider.environment.STOCKS_TABLE}',
           AttributeDefinitions: [
-            { AttributeName: 'product_id', AttributeType: 'S' },
-            { AttributeName: 'score', AttributeType: 'N' }
+            { AttributeName: 'product_id', AttributeType: 'S' }
           ],
           KeySchema: [
             { AttributeName: 'product_id', KeyType: 'HASH' }
@@ -77,13 +73,13 @@ const serverlessConfiguration: AWS = {
             ReadCapacityUnits: 1,
             WriteCapacityUnits: 1
           }
-        }
+        },
       }
     }
   },
 
   // import the function via paths
-  functions: { getProductsList, getProductsById },
+  functions: { getProductsList, getProductsById, createProduct },
   package: { individually: true },
   custom: {
     esbuild: {

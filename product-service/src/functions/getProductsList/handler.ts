@@ -16,17 +16,14 @@ export const getProductsList = async () => {
                 .promise();
 
             const stock = stockResult.Item;
-            return { ...product, stock };
+            return { ...product, count: stock.count };
         })
 
         const productsWithStock = await Promise.all(stockPromises);
+        console.log('Data:', productsWithStock);
 
         if (!productsWithStock.length) {
-            return {
-                headers: RESPONSE_HEADERS,
-                statusCode: 404,
-                body: JSON.stringify('Products not found'),
-            };
+            throw new Error('Products not found');
         }
 
         return {
@@ -40,7 +37,7 @@ export const getProductsList = async () => {
 
         return {
             statusCode: 500,
-            body: JSON.stringify({ message: 'Internal server error' }),
+            body: JSON.stringify({ message: 'The list of products empty' }),
         };
     }
 }
