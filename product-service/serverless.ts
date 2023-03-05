@@ -36,6 +36,8 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
+      PRODUCTS_TABLE: 'products',
+      STOCKS_TABLE: 'stocks'
     },
   },
   resources: {
@@ -43,7 +45,7 @@ const serverlessConfiguration: AWS = {
       ProductsTable: {
         Type: 'AWS::DynamoDB::Table',
         Properties: {
-          TableName: 'products',
+          TableName: '${self:provider.environment.PRODUCTS_TABLE}',
           AttributeDefinitions: [
             { AttributeName: 'id', AttributeType: 'S' },
             { AttributeName: 'title', AttributeType: 'S' },
@@ -52,8 +54,7 @@ const serverlessConfiguration: AWS = {
             { AttributeName: 'price', AttributeType: 'N' },
           ],
           KeySchema: [
-            { AttributeName: 'id', KeyType: 'HASH' },
-            { AttributeName: 'title', KeyType: 'RANGE' }
+            { AttributeName: 'id', KeyType: 'HASH' }
           ],
           ProvisionedThroughput: {
             ReadCapacityUnits: 1,
@@ -64,13 +65,14 @@ const serverlessConfiguration: AWS = {
       StocksTable: {
         Type: 'AWS::DynamoDB::Table',
         Properties: {
-          TableName: 'stocks',
+          TableName: '${self:provider.environment.STOCKS_TABLE}',
           AttributeDefinitions: [
             { AttributeName: 'product_id', AttributeType: 'S' },
             { AttributeName: 'score', AttributeType: 'N' }
           ],
           KeySchema: [
-            { AttributeName: 'product_id', KeyType: 'HASH' }],
+            { AttributeName: 'product_id', KeyType: 'HASH' }
+          ],
           ProvisionedThroughput: {
             ReadCapacityUnits: 1,
             WriteCapacityUnits: 1
@@ -81,10 +83,7 @@ const serverlessConfiguration: AWS = {
   },
 
   // import the function via paths
-  functions: {
-    getProductsList,
-    getProductsById,
-  },
+  functions: { getProductsList, getProductsById },
   package: { individually: true },
   custom: {
     esbuild: {
