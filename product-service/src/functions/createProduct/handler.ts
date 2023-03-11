@@ -19,7 +19,7 @@ export const createProduct = async (event) => {
     const requestBody = JSON.parse(event.body);
     const { title, description, price, count } = requestBody;
 
-    if (!title && !description && !price && !count) {
+    if (!title && !description && !price && count === undefined) {
         throw new Error('Missing required fields');
     }
 
