@@ -1,0 +1,14 @@
+{
+  "name": "shop-serverless",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "swagger": "open-swagger-ui ./products.swagger.yaml --open"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "open-swagger-ui": "^1.2.0"
+  }
+}
