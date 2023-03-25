@@ -1,10 +1,12 @@
 import { SQSEvent } from 'aws-lambda';
-import { Lambda } from 'aws-sdk';
+import { Lambda, SNS } from 'aws-sdk';
 
 const lambda = new Lambda({ region: 'eu-west-1' });
+const sns = new SNS({ region: 'eu-west-1' });
 
 export const catalogBatchProcess = async (event: SQSEvent) => {
     try {
+        const products = [];
         const productsPromises = event.Records.map(({ body }) => {
             const parsedData = JSON.parse(body);
 
@@ -15,6 +17,7 @@ export const catalogBatchProcess = async (event: SQSEvent) => {
                 price: parsedData.price,
                 count: parsedData.count,
             };
+            products.push(newProduct);
 
             const params = {
                 FunctionName: 'product-service-dev-createProduct',
@@ -25,6 +28,12 @@ export const catalogBatchProcess = async (event: SQSEvent) => {
         });
 
         await Promise.all(productsPromises);
+
+        sns.publish({
+            Subject: 'Products created',
+            Message: JSON.stringify(products),
+            TopicArn: process.env.SNS_ARN
+        }, () => console.log('Email has sent'))
 
         return {
             statusCode: 200,

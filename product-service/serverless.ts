@@ -38,10 +38,16 @@ const serverlessConfiguration: AWS = {
         }
       },
       {
+        Effect: 'Allow',
+        Action: 'sns:*',
+        Resource: {
+          Ref: 'SNSTopic'
+        }
+      },
+      {
         Effect: "Allow",
         Action: ["lambda:InvokeFunction"],
         Resource: "arn:aws:lambda:eu-west-1:875232290778:function:product-service-dev-createProduct"
-        
       }
 
     ],
@@ -54,7 +60,8 @@ const serverlessConfiguration: AWS = {
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
       PRODUCTS_TABLE: 'products',
       STOCKS_TABLE: 'stocks',
-      SQS_URL: { Ref: 'SQSQueue' }
+      SQS_URL: { Ref: 'SQSQueue' },
+      SNS_ARN: { Ref: 'SNSTopic' }
     },
   },
   resources: {
@@ -95,6 +102,20 @@ const serverlessConfiguration: AWS = {
         Type: 'AWS::SQS::Queue',
         Properties: {
           QueueName: 'catalogItemsQueue'
+        }
+      },
+      SNSTopic: {
+        Type: 'AWS::SNS::Topic',
+        Properties: {
+          TopicName: 'createProductTopic'
+        }
+      },
+      SNSSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: 'artyusmarina@yandex.ru',
+          Protocol: 'email',
+          TopicArn: { Ref: 'SNSTopic' }
         }
       }
     }
