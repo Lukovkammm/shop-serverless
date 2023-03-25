@@ -16,7 +16,13 @@ const serverlessConfiguration: AWS = {
           Effect: 'Allow',
           Action: 's3:*',
           Resource: ['${self: provider.environment.ARN_BUCKET}', '${self:provider.environment.ARN_BUCKET}/*']
-        }]
+        },
+        {
+          Effect: 'Allow',
+          Action: 'sqs:SendMessage',
+          Resource: 'arn:aws:sqs:eu-west-1:875232290778:catalogItemsQueue'
+        }
+        ]
       }
     },
 
@@ -29,9 +35,11 @@ const serverlessConfiguration: AWS = {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
       ARN_BUCKET: 'arn:aws:s3:::module-5-uploaded',
-      BUCKET: 'module-5-uploaded'
+      BUCKET: 'module-5-uploaded',
+      SQS_URL: 'https://sqs.eu-west-1.amazonaws.com/875232290778/catalogItemsQueue'
     },
   },
+
   // import the function via paths
   functions: {
     importProductsFile: {
