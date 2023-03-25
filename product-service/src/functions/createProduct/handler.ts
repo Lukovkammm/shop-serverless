@@ -14,10 +14,8 @@ const putItem = async (tableName: string, item: { [key: string]: AWS.DynamoDB.At
 };
 
 export const createProduct = async (event) => {
-    console.log('Incoming request:', event);
-
-    const requestBody = JSON.parse(event.body);
-    const { title, description, price, count } = requestBody;
+    const requestBody = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
+    const { title, description, imageUrl, price, count } = requestBody;
 
     if (!title && !description && !price && count === undefined) {
         throw new Error('Missing required fields');
@@ -27,13 +25,13 @@ export const createProduct = async (event) => {
         id: { S: randomUUID() },
         title: { S: title },
         description: { S: description },
-        imageUrl: { S: "https://source.unsplash.com/random" },
-        price: { N: price }
+        imageUrl: { S: imageUrl || "https://source.unsplash.com/random" },
+        price: { S: price.toString() }
     };
 
     const newStockItem = {
         product_id: newProduct.id,
-        count: { N: count }
+        count: { N: count.toString() }
     }
 
     try {
@@ -51,8 +49,8 @@ export const createProduct = async (event) => {
         const statusCode = error.message.includes('Missing required fields') ? 400 : 500;
 
         return {
-          statusCode,
-          body: JSON.stringify({ error: error.message })
+            statusCode,
+            body: JSON.stringify({ error: error.message })
         };
     }
 }

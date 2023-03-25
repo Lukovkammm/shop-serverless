@@ -1,14 +1,15 @@
 import { S3, SQS } from 'aws-sdk';
 import csv from 'csv-parser';
 
+const s3 = new S3({ region: 'eu-west-1' });
+const sqs = new SQS();
+
 export const importFileParser = async (event) => {
-    const s3 = new S3({ region: 'eu-west-1' });
     const s3Event = event.Records[0].s3;
     const bucket = s3Event.bucket.name;
     const key = s3Event.object.key;
     console.log(`Bucket: ${bucket}, key: ${key}`);
 
-    const sqs = new SQS();
 
     const s3ReadStream = await s3.getObject({
         Bucket: bucket,
@@ -19,7 +20,7 @@ export const importFileParser = async (event) => {
         .on('data', (data) => {
             sqs.sendMessage({
                 QueueUrl: process.env.SQS_URL,
-                MessageBody: JSON.stringify(data)
+                MessageBody: JSON.stringify(data).replace(/\ufeff/g, '')
             }, (err, data) => {
                 if (err) {
                     console.log(err);

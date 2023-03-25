@@ -2,6 +2,7 @@ import type { AWS } from '@serverless/typescript';
 import getProductsById from '@functions/getProductsById';
 import getProductsList from '@functions/getProductsList';
 import createProduct from '@functions/createProduct';
+import catalogBatchProcess from '@functions/catalogBatchProcess';
 
 const serverlessConfiguration: AWS = {
   service: 'product-service',
@@ -29,6 +30,20 @@ const serverlessConfiguration: AWS = {
           `arn:aws:dynamodb:\${self:provider.region}:*:table/stocks`
         ]
       },
+      {
+        Effect: 'Allow',
+        Action: 'sqs:*',
+        Resource: {
+          'Fn::GetAtt': ['SQSQueue', 'Arn']
+        }
+      },
+      {
+        Effect: "Allow",
+        Action: ["lambda:InvokeFunction"],
+        Resource: "arn:aws:lambda:eu-west-1:875232290778:function:product-service-dev-createProduct"
+        
+      }
+
     ],
     apiGateway: {
       minimumCompressionSize: 1024,
@@ -38,7 +53,8 @@ const serverlessConfiguration: AWS = {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
       PRODUCTS_TABLE: 'products',
-      STOCKS_TABLE: 'stocks'
+      STOCKS_TABLE: 'stocks',
+      SQS_URL: { Ref: 'SQSQueue' }
     },
   },
   resources: {
@@ -74,12 +90,18 @@ const serverlessConfiguration: AWS = {
             WriteCapacityUnits: 1
           }
         },
+      },
+      SQSQueue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'catalogItemsQueue'
+        }
       }
     }
   },
 
   // import the function via paths
-  functions: { getProductsList, getProductsById, createProduct },
+  functions: { getProductsList, getProductsById, createProduct, catalogBatchProcess },
   package: { individually: true },
   custom: {
     esbuild: {
