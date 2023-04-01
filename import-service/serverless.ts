@@ -30,8 +30,9 @@ const serverlessConfiguration: AWS = {
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
       ARN_BUCKET: 'arn:aws:s3:::module-5-uploaded',
       BUCKET: 'module-5-uploaded'
-    },
+    }
   },
+
   // import the function via paths
   functions: {
     importProductsFile: {
@@ -42,6 +43,10 @@ const serverlessConfiguration: AWS = {
             method: 'get',
             path: '/import',
             cors: true,
+            authorizer: {
+              type: "request",
+              arn: 'arn:aws:lambda:eu-west-1:875232290778:function:authorization-service-dev-basicAuthorizer'
+            },
             request: {
               parameters: {
                 querystrings: { name: true }
