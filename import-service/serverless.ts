@@ -20,6 +20,19 @@ const serverlessConfiguration: AWS = {
       }
     },
 
+    httpApi: {
+      cors: {
+        allowedOrigins: [
+          "http://localhost:4200",
+          "http://d293cocyg23y9j.cloudfront.net",
+          "https://d293cocyg23y9j.cloudfront.net",
+        ],
+        allowedMethods: ["GET", "POST"],
+        allowCredentials: true,
+        allowedHeaders: ["Content-Type", "Authorization"],
+      }
+    },
+
     apiGateway: {
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,

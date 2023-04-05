@@ -34,6 +34,20 @@ const serverlessConfiguration: AWS = {
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,
     },
+
+    httpApi: {
+      cors: {
+        allowedOrigins: [
+          "http://localhost:4200",
+          "http://d293cocyg23y9j.cloudfront.net",
+          "https://d293cocyg23y9j.cloudfront.net",
+        ],
+        allowedMethods: ["GET", "POST"],
+        allowCredentials: true,
+        allowedHeaders: ["Content-Type", "Authorization"],
+      }
+    },
+
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
