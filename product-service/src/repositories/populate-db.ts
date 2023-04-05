@@ -1,5 +1,5 @@
 import * as AWS from 'aws-sdk';
-import { productList } from 'src/models/mock-data';
+import { productList } from '../models/mock-data';
 
 AWS.config.update({ region: 'eu-west-1' });
 const dynamodb = new AWS.DynamoDB();

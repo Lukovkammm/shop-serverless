@@ -26,6 +26,19 @@ const serverlessConfiguration: AWS = {
       }
     },
 
+    httpApi: {
+      cors: {
+        allowedOrigins: [
+          "http://localhost:4200",
+          "http://d293cocyg23y9j.cloudfront.net",
+          "https://d293cocyg23y9j.cloudfront.net",
+        ],
+        allowedMethods: ["GET", "POST"],
+        allowCredentials: true,
+        allowedHeaders: ["Content-Type", "Authorization"],
+      }
+    },
+
     apiGateway: {
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,
@@ -50,6 +63,10 @@ const serverlessConfiguration: AWS = {
             method: 'get',
             path: '/import',
             cors: true,
+            authorizer: {
+              type: "request",
+              arn: 'arn:aws:lambda:eu-west-1:875232290778:function:authorization-service-dev-basicAuthorizer'
+            },
             request: {
               parameters: {
                 querystrings: { name: true }
